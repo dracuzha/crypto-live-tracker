@@ -12,6 +12,6 @@ endpoint_url = f"https://www.alphavantage.co/query?function={function}&from_curr
 response = requests.get(endpoint_url)
 data = response.json()
 
-json_file = 'crypto-data-test.json'
+json_file = 'crypto-data-test.json' #<- change the test data file name here
 with open(json_file, 'w') as file:
     json.dump(data,file)
