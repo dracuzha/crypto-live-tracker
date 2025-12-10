@@ -2,17 +2,20 @@ import requests
 import csv
 import time
 
-function = "CURRENCY_EXCHANGE_RATE"
-from_currency = "BTC"   #<- or whatever currency you want to track
-to_currency = "USD" #<- local conversion currency, change to your local currency. check the alpha vantage docs to see available currencies
-apikey = "URZP2YJV026Z764X" #<- use your api-key and be aware about api calls, making more than 5 calls per second gets you banned. read the alpha vantage artcile for more 
-fieldnames = ["from_currency_code", "from_currency_name", "to_currency_code", "to_currency_name", "exchange_rate", "last_refreshed", "time_zone", "bid_price", "ask_price"]
+# paramters are passed via dictionary to avoid endpoint errors
+payload = {
+    "function" : "CURRENCY_EXCHANGE_RATE",
+    "from_currency" : "BTC",   #<- or whatever currency you want to track
+    "to_currency" : "USD", #<- local conversion currency, change to your local currency. check the alpha vantage docs to see available currencies
+    "apikey" : "URZP2YJV026Z764X" #<- use your api-key and be aware about api calls, making more than 5 calls per second gets you banned. read the alpha vantage artcile for more 
+}
+endpoint_url = "https://www.alphavantage.co/query" #<- direct csv datatype api endpoint is available, but your learn purpose i did this way. Change this accordingly based on alpha vantage docs
 
-endpoint_url = f"https://www.alphavantage.co/query?function={function}&from_currency={from_currency}&to_currency={to_currency}&apikey={apikey}" #<- direct csv datatype api endpoint is available, but your learn purpose i did this way. Change this accordingly based on alpha vantage docs
+fieldnames = ["from_currency_code", "from_currency_name", "to_currency_code", "to_currency_name", "exchange_rate", "last_refreshed", "time_zone", "bid_price", "ask_price"]
 
 while(True) :
     try:
-        response = requests.get(endpoint_url)
+        response = requests.get(endpoint_url, params=payload)
         if response.status_code == 200:
             print("Response got !")
             raw_data = response.json()
@@ -28,7 +31,7 @@ while(True) :
                 "ask_price" : raw_data["Realtime Currency Exchange Rate"]["9. Ask Price"]
             }
 
-            csv_file = f"{from_currency}-{to_currency}-price-tracker.csv"
+            csv_file = f"{clean_data["from_currency_code"]}-{clean_data["to_currency_code"]}-price-tracker.csv"
             with open(csv_file, mode='a', newline='') as data_file:
                 writer = csv.DictWriter(data_file, fieldnames=fieldnames)
                 if data_file.tell() == 0:

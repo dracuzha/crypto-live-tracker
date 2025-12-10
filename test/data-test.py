@@ -2,14 +2,15 @@ import requests
 import json
 
 # endpoint parameters
-function = "CURRENCY_EXCHANGE_RATE"
-from_currency = "BTC"
-to_currency = "USD"
-apikey = "URZP2YJV026Z764X"
+payload = {
+    "function" : "CURRENCY_EXCHANGE_RATE",
+    "from_currency" : "BTC",
+    "to_currency" : "USD",
+    "apikey" : "URZP2YJV026Z764X"
+}
 
-endpoint_url = f"https://www.alphavantage.co/query?function={function}&from_currency={from_currency}&to_currency={to_currency}&apikey={apikey}"
-
-response = requests.get(endpoint_url)
+endpoint_url = "https://www.alphavantage.co/query"
+response = requests.get(endpoint_url, params=payload)
 data = response.json()
 
 json_file = 'crypto-data-test.json' #<- change the test data file name here
