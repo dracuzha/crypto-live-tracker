@@ -1,6 +1,7 @@
 import requests
-import csv
+import sqlite3
 import time
+import datetime
 
 # paramters are passed via dictionary to avoid endpoint errors
 payload = {
@@ -12,6 +13,24 @@ payload = {
 endpoint_url = "https://www.alphavantage.co/query" #<- direct csv datatype api endpoint is available, but your learn purpose i did this way. Change this accordingly based on alpha vantage docs
 
 fieldnames = ["from_currency_code", "from_currency_name", "to_currency_code", "to_currency_name", "exchange_rate", "last_refreshed", "time_zone", "bid_price", "ask_price"]
+
+conn = sqlite3.connect("crypto-prices.db")
+cursor = conn.cursor()
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS bitcoin_prices (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        from_currency_code TEXT, 
+        from_currency_name TEXT, 
+        to_currency_code TEXT, 
+        to_currency_name TEXT, 
+        exchange_rate FLOAT, 
+        last_refreshed TEXT, 
+        time_zone TEXT, 
+        bid_price FLOAT, 
+        ask_price FLOAT
+    )
+''')
+conn.commit()
 
 while(True) :
     try:
@@ -31,13 +50,22 @@ while(True) :
                 "ask_price" : raw_data["Realtime Currency Exchange Rate"]["9. Ask Price"]
             }
 
-            csv_file = f"{clean_data["from_currency_code"]}-{clean_data["to_currency_code"]}-price-tracker.csv"
-            with open(csv_file, mode='a', newline='') as data_file:
-                writer = csv.DictWriter(data_file, fieldnames=fieldnames)
-                if data_file.tell() == 0:
-                    writer.writeheader()
-                writer.writerow(clean_data)
-            print(f"Data saved to {csv_file}")
+            cursor.execute('''
+                INSERT INTO bitcoin_prices(from_currency_code , 
+                                            from_currency_name , 
+                                            to_currency_code , 
+                                            to_currency_name , 
+                                            exchange_rate , 
+                                            last_refreshed , 
+                                            time_zone , 
+                                            bid_price , 
+                                            ask_price )
+                values(?,?,?,?,?,?,?,?,?)
+            ''',(clean_data["from_currency_code"],clean_data["from_currency_name"],clean_data["to_currency_code"],clean_data["to_currency_name"],clean_data["exchange_rate"],clean_data["last_refreshed"],clean_data["time_zone"],clean_data["bid_price"],clean_data["ask_price"]))
+            conn.commit()
+
+
+            print(f"Data saved to crypto-prices.db")
             time.sleep(60)
 
         else:
@@ -47,3 +75,5 @@ while(True) :
     except Exception as e:
         print(f"Error occurred: {e}")
         time.sleep(60)
+
+conn.close()
