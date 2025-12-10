@@ -1,6 +1,6 @@
 # 📈 Crypto Live Price Tracker
 
-A python script to live price track crypto currencies with local currency exhange rate and store it in a csv file. Uses [Alpha Vantage](https://www.alphavantage.co/documentation/) API for getting crypto exchange rate.
+A python script to live price track crypto currencies with local currency exhange rate and store it in a sqlite DB file. Uses [Alpha Vantage](https://www.alphavantage.co/documentation/) API for getting crypto exchange rate.
 
 ## 🧪 Tests Overview
 
@@ -9,8 +9,9 @@ A python script to live price track crypto currencies with local currency exhang
 
 ## 📃 Script
 
-- This Python script gets the crypto live price exchange rate and store it in a csv file
-- Uses requests python library to interact with API and gets the json data. And the json data is cleaned somewhat and stored in a csv file.
+- This Python script gets the crypto live price exchange rate and store it in a sqlite DB file
+- Uses requests python library to interact with API and gets the json data. And the json data is cleaned somewhat and stored in a sqlite DB file.
+- Implemented Pandas for much cleaner approach to insert dictionary data into SQL DB, logging for cleaner way to document the process.
 
 ## 📝 Note :
 
